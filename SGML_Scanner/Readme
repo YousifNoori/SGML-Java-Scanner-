@@ -1,0 +1,210 @@
+SGML Scanner
+
+--------------------------------------------------------------------------------------------------------------------------
+
+Problem Description
+
+The goal of this project is to implement a scanner for SGML tagged documents using Java and JFlex.
+The scanner preprocesses news articles by filtering irrelevant SGML content, validating proper tag nesting, and tokenizing relevant text into structured token types for processing such as indexing or classification.
+
+The scanner reads SGML input from standard input and outputs tokens to standard output.
+
+--------------------------------------------------------------------------------------------------------------------------
+
+Features Implemented
+1. SGML Tag Recognition and Validation
+
+General OPEN-TAG and CLOSE-TAG recognition 
+
+Case insensitive matching of tag names
+
+Global stack maintained inside the JFlex specification to ensure the following:
+
+	Proper tag nesting
+
+	Detection of mismatched open and close tags
+
+	Detection of unmatched tags at end of file
+
+	Errors reported include:
+
+	Tag mismatch errors
+
+	Unmatched tags remaining on stack at EOF
+
+2. Relevant vs Irrelevant Tag Filtering
+
+  Relevant tags whose content is preserved:
+
+	<Doc>
+
+	<DocNo>
+
+	<Text>
+
+	<Date>
+
+	<Headline>
+
+	<Length>
+
+	<P>
+
+  Irrelevant tags filtered out (including their contents):
+
+	<Byline>
+
+	<Correction>
+
+	<Correction-Date>
+
+	<Dateline>
+
+	<DocID>
+
+	<Graphic>
+
+	<Section>
+
+	<Subject>
+
+	<Type>
+
+	Any unknown tags
+
+  Paragraph tags <P> are conditionally output:
+
+	Included only if all tags on the stack are relevant
+
+	Filtered out if nested inside irrelevant tags
+
+3. Token Types Supported
+
+The scanner tokenizes text inside relevant tags into the following token types:
+
+WORD
+Alphanumeric strings such as John, abc123, compiler
+
+NUMBER
+Integers and floating point numbers with optional sign
+Examples: 123, -45, 3.14
+Excluded: .77, no leading digit treated as '.' and '77'
+
+APOSTROPHIZED
+Words containing apostrophes
+Examples: You're, John's, O'Reilly's
+Hyphenated apostrophized forms such as father-in-law's are also supported
+
+HYPHENATED
+Multi-part words connected by hyphens
+Examples: data-base, father-in-law
+Sequences like --- are tokenized as individual punctuation marks '-','-','-'
+
+PUNCTUATION
+Any character not contributing to the above tokens
+
+4. Error Handling
+
+Mismatched tags are reported and ignored to allow continued scanning
+
+Remaining unmatched tags at EOF are reported
+
+The scanner continues processing input after errors
+
+--------------------------------------------------------------------------------------------------------------------------
+
+
+Testing
+
+A set of test files is included in the tests directory to validate individual functionalities:
+
+Test Cases Include:
+
+	Apostrophized words
+
+	Hyphenated words
+
+	Hyphen + apostrophe combinations
+
+	Case insensitive tag matching
+
+	Irrelevant tag filtering
+
+	Nested irrelevant tags
+
+	Paragraph handling
+
+	Tag mismatch detection
+
+	Unmatched tags at EOF
+
+	Word and number classification
+
+A shell script runtests.sh executes all test files automatically.
+
+--------------------------------------------------------------------------------------------------------------------------
+
+
+How to Build
+
+
+From the ynoori_A1 directory navigate to the Scanner directory 
+and run the program by running the following commands:
+
+cd Scanner
+
+make clean
+
+make
+
+To run the scanner on newsdata.txt file and print to terminal:
+
+java Scanner < ../newsdata.txt
+
+If you'd like it to print to a file
+
+java Scanner < ../newsdata.txt > test.out
+
+To run the full test script:
+
+chmod +x runtests.sh
+./runtests.sh
+
+--------------------------------------------------------------------------------------------------------------------------
+
+Assumptions and Design Decisions
+
+Apostrophized tokens are matched using JFlex’s longest possible match behavior, as described in the assignment.
+
+Hyphens separating distinct words may be treated as punctuation unless part of a recognized hyphenated structure
+
+Unknown tags are treated as irrelevant by default
+
+Limitations
+
+The scanner validates proper nesting of tags using a global stack but does not enforce a complete SGML grammar beyond matching open and close tags
+
+Possible Improvements
+
+Testing could be expanded to include automated comparison against reference outputs for larger document sets.
+
+--------------------------------------------------------------------------------------------------------------------------
+
+Uploaded File Structure
+
+SGML_Scanner contains:
+Scanner folder 
+Readme
+and the data set we tested on
+
+The Scanner folder contains:
+makefile 
+Scanner.java
+Token.java
+sgml.flex
+-- these files are used to run our program 
+
+tests folder with a bunch of test cases
+runtests.sh -- bash script to run our test cases  
+
+newsdataRun.out -- a sample of the output given by running our scanner with the provided newsdata.txt

@@ -1,0 +1,9 @@
+<Doc>
+  <Text>
+    <P>Visible</P>
+    <Correction>
+      <P>Hidden</P>
+    </Correction>
+    <P>Visible again</P>
+  </Text>
+</Doc>
